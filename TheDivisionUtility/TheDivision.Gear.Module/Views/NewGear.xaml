@@ -1,0 +1,294 @@
+﻿<UserControl x:Class="TheDivisionUtility.TheDivision.Gear.Module.Views.NewGear"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"            
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui"
+             xmlns:viewModels="clr-namespace:TheDivisionUtility.TheDivision.Gear.Module.ViewModels"
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             xmlns:controls="clr-namespace:TheDivisionUtility.Controls;assembly=TheDivisionUtility.Controls"
+             xmlns:converters="clr-namespace:TheDivisionUtility.TheDivision.Gear.Module.Converters"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:TheDivisionUtility.TheDivision.Gear.Contracts.Enums"
+             xmlns:behaviors="clr-namespace:TheDivisionUtility.TheDivision.Gear.Module.Behaviors"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance viewModels:NewGearViewModel}" 
+             d:DesignHeight="300" d:DesignWidth="324">
+
+    <x:Code>
+        <![CDATA[
+            public NewGear()
+            {
+                InitializeComponent();
+            }
+        ]]>
+    </x:Code>
+
+    <dxmvvm:Interaction.Behaviors>
+        <dxmvvm:FocusBehavior/>
+        <dxmvvm:CurrentWindowService ClosingCommand="{Binding CancelCommand}" Window="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+        <dxwui:WinUIMessageBoxService/>
+    </dxmvvm:Interaction.Behaviors>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CancelCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+    <UserControl.Resources>
+        <converters:GearTypeToVisibilityConverter x:Key="GearTypeToVisibilityConverter"></converters:GearTypeToVisibilityConverter>
+        <ControlTemplate x:Key="DivisionEditBox" TargetType="{x:Type dxe:TextEdit}">
+            <ContentControl Template="{TemplateBinding ActualBorderTemplate}" x:Name="PART_Root" dx:FocusHelper2.Focusable="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <Grid SnapsToDevicePixels="True" Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <dxe:ErrorControl x:Name="PART_ErrorPresenter" />
+                    <dxe:EditorControl Grid.Column="1"  x:Name="PART_Content" Template="{TemplateBinding ActualEditorControlTemplate}" />
+                </Grid>
+            </ContentControl>
+        </ControlTemplate>
+        
+        <DataTemplate x:Key="Test">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <dxe:ComboBoxEdit Text="test"></dxe:ComboBoxEdit>
+                <dxe:TextEdit Text="test" Grid.Column="1"/>
+            </Grid>
+        </DataTemplate>
+
+        <ObjectDataProvider x:Key="GearSets" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:GearSetTypes"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <converters:GearTypeToAvailableMajorAttributesConverter x:Key="GearTypeToAvailableMajorAttributesConverter"></converters:GearTypeToAvailableMajorAttributesConverter>
+        <converters:GearTypeToAvailableMinorAttributesConverter x:Key="GearTypeToAvailableMinorAttributesConverter"></converters:GearTypeToAvailableMinorAttributesConverter>
+    </UserControl.Resources>
+
+    <Grid >
+        <Grid.Background>
+            <SolidColorBrush Opacity=".25" Color="#353535"></SolidColorBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <dxe:ComboBoxEdit ItemsSource="{StaticResource GearSets}" IsCaseSensitiveSearch="False" AutoComplete="True" FocusPopupOnOpen="True" IncrementalFiltering="True" IncrementalSearch="True" SelectedItem="{Binding NewGear.GearSet}"></dxe:ComboBoxEdit>
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+            <TextBlock Margin="8,8,8,4" Text="ARMOR"/>
+            <dxe:TextEdit Margin="8,0" Text="{Binding NewGear.Armor, Mode=TwoWay, NotifyOnValidationError=True}" InvalidValueBehavior="AllowLeaveEditor" CausesValidation="True" HorizontalAlignment="Left" Width="Auto">
+                <i:Interaction.Behaviors>
+                    <behaviors:GearArmorValidationBehavior/>
+                </i:Interaction.Behaviors>
+            </dxe:TextEdit>
+        </StackPanel>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <controls:DivisionEditBox Text="{Binding NewGear.FirearmAttribute}" NullText="205" Margin="4"></controls:DivisionEditBox>
+
+            <!--<module:DivisionEditBox Grid.Column="0" IconData="m 382.90209 439.41249 c -0.051 -0.015 -0.091 -0.01 -0.1191 0.019 -0.6934 0.7005 -21.7228 36.9835 -99.53715 171.7324 -7.91336 13.7034 -14.38867 25.0659 -14.38867 25.25 0 0.1842 51.30002 0.334 114.00002 0.334 62.7 0 113.9999 -0.1819 113.9999 -0.4043 0 -0.2223 -5.5576 -10.0098 -12.3496 -21.75 -16.5672 -28.6368 -85.2058 -148.2102 -93.9472 -163.6621 -3.5929 -6.351 -6.8932 -11.2964 -7.6582 -11.5195 z m 0.4824 20.582 c 0.1112 0.14 8.0731 13.9789 17.6934 30.7539 9.6202 16.775 30.6314 53.367 46.6914 81.3145 16.06 27.9475 29.4488 51.46 29.7519 52.25 0.4706 1.2261 -3.3288 1.4355 -25.9589 1.4355 l -26.5079 0 -0.7148 -6.1621 c -0.9754 -8.4038 -3.2718 -16.0382 -9.375 -31.1718 -5.6585 -14.0309 -8.1074 -22.2974 -8.1074 -27.375 l 0 -3.2911 -23.5 0 -23.5 0 0 2.9356 c 0 6.2509 -3.1895 17.5308 -9.0684 32.0723 -3.7969 9.3916 -6.7514 18.5469 -7.7695 24.0742 l -1.6426 8.9179 -26.7598 0 c -14.71776 0 -26.75972 -0.191 -26.75972 -0.4257 0 -0.97 95.20282 -165.7365 95.52732 -165.3282 z m -0.3965 31.7539 c -1.4031 0 -14.6846 20.8594 -18.8906 29.668 -3.4372 7.1986 -3.7667 8.662 -4.0801 18.082 l -0.3418 10.25 23.1817 0 23.1816 0 -0.3398 -10.25 c -0.3223 -9.688 -0.5756 -10.7374 -4.6231 -19.1621 -4.6534 -9.6858 -16.6132 -28.5879 -18.0879 -28.5879 z"/>-->
+            <Grid  Grid.Column="1"  Height="100" Width="100" Margin="4" HorizontalAlignment="Left">
+                <Grid.Background >
+                    <SolidColorBrush Opacity="0.25" Color="#353535"></SolidColorBrush>
+                </Grid.Background>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Rectangle Height="2" Width="2" Opacity=".25" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="White"></Rectangle>
+                <Rectangle Height="2" Width="2" Opacity=".25" HorizontalAlignment="Right" VerticalAlignment="Top" Fill="White"></Rectangle>
+                <Rectangle Grid.Row="1" Height="2" Opacity=".25" Width="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Fill="White"></Rectangle>
+                <Rectangle Grid.Row="1" Height="2" Opacity=".25" Width="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Fill="White"></Rectangle>
+                <Viewbox Height="40" Width="40" HorizontalAlignment="Center" Stretch="Uniform">
+                    <Canvas Width="227.99991" Height="197.34363">
+                        <Canvas>
+                            <Canvas.RenderTransform>
+                                <TranslateTransform X="-268.85717" Y="-439.40425"/>
+                            </Canvas.RenderTransform>
+                            <Path Opacity="0.5" Fill="White">
+                                <Path.Data>
+                                    <PathGeometry Figures="m 382.90209 439.41249 c -0.051 -0.015 -0.091 -0.01 -0.1191 0.019 -0.6934 0.7005 -21.7228 36.9835 -99.53715 171.7324 -7.91336 13.7034 -14.38867 25.0659 -14.38867 25.25 0 0.1842 51.30002 0.334 114.00002 0.334 62.7 0 113.9999 -0.1819 113.9999 -0.4043 0 -0.2223 -5.5576 -10.0098 -12.3496 -21.75 -16.5672 -28.6368 -85.2058 -148.2102 -93.9472 -163.6621 -3.5929 -6.351 -6.8932 -11.2964 -7.6582 -11.5195 z m 0.4824 20.582 c 0.1112 0.14 8.0731 13.9789 17.6934 30.7539 9.6202 16.775 30.6314 53.367 46.6914 81.3145 16.06 27.9475 29.4488 51.46 29.7519 52.25 0.4706 1.2261 -3.3288 1.4355 -25.9589 1.4355 l -26.5079 0 -0.7148 -6.1621 c -0.9754 -8.4038 -3.2718 -16.0382 -9.375 -31.1718 -5.6585 -14.0309 -8.1074 -22.2974 -8.1074 -27.375 l 0 -3.2911 -23.5 0 -23.5 0 0 2.9356 c 0 6.2509 -3.1895 17.5308 -9.0684 32.0723 -3.7969 9.3916 -6.7514 18.5469 -7.7695 24.0742 l -1.6426 8.9179 -26.7598 0 c -14.71776 0 -26.75972 -0.191 -26.75972 -0.4257 0 -0.97 95.20282 -165.7365 95.52732 -165.3282 z m -0.3965 31.7539 c -1.4031 0 -14.6846 20.8594 -18.8906 29.668 -3.4372 7.1986 -3.7667 8.662 -4.0801 18.082 l -0.3418 10.25 23.1817 0 23.1816 0 -0.3398 -10.25 c -0.3223 -9.688 -0.5756 -10.7374 -4.6231 -19.1621 -4.6534 -9.6858 -16.6132 -28.5879 -18.0879 -28.5879 z" FillRule="NonZero"/>
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+                    </Canvas>
+                </Viewbox>
+                <dxe:TextEdit Grid.Row="1" Text="{Binding NewGear.StaminaAttribute}" Height="22" ShowBorder="False" HorizontalAlignment="Center">
+                    <dxe:TextEdit.Style>
+                        <Style TargetType="dxe:TextEdit">
+                            <Setter Property="Margin" Value="0"></Setter>
+                            <Setter Property="Padding" Value="0"></Setter>
+                            <Setter Property="BorderThickness" Value="0"></Setter>
+                            <Setter Property="Template" Value="{StaticResource DivisionEditBox}"></Setter>
+                        </Style>
+                    </dxe:TextEdit.Style>
+                </dxe:TextEdit>
+
+            </Grid>
+            <Grid  Grid.Column="2"  Height="100" Width="100" Margin="4" HorizontalAlignment="Left">
+                <Grid.Background >
+                    <SolidColorBrush Opacity="0.25" Color="#353535"></SolidColorBrush>
+                </Grid.Background>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Rectangle Height="2" Width="2" Opacity=".25" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="White"></Rectangle>
+                <Rectangle Height="2" Width="2" Opacity=".25" HorizontalAlignment="Right" VerticalAlignment="Top" Fill="White"></Rectangle>
+                <Rectangle Grid.Row="1" Height="2" Opacity=".25" Width="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Fill="White"></Rectangle>
+                <Rectangle Grid.Row="1" Height="2" Opacity=".25" Width="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Fill="White"></Rectangle>
+                <Viewbox Height="40" Width="40" HorizontalAlignment="Center" Stretch="Uniform">
+                    <Canvas Width="227.99991" Height="197.34363">
+                        <Canvas>
+                            <Canvas.RenderTransform>
+                                <TranslateTransform X="-268.85717" Y="-439.40425"/>
+                            </Canvas.RenderTransform>
+                            <Path Opacity="0.5" Fill="White">
+                                <Path.Data>
+                                    <PathGeometry Figures="m 382.90209 439.41249 c -0.051 -0.015 -0.091 -0.01 -0.1191 0.019 -0.6934 0.7005 -21.7228 36.9835 -99.53715 171.7324 -7.91336 13.7034 -14.38867 25.0659 -14.38867 25.25 0 0.1842 51.30002 0.334 114.00002 0.334 62.7 0 113.9999 -0.1819 113.9999 -0.4043 0 -0.2223 -5.5576 -10.0098 -12.3496 -21.75 -16.5672 -28.6368 -85.2058 -148.2102 -93.9472 -163.6621 -3.5929 -6.351 -6.8932 -11.2964 -7.6582 -11.5195 z m 0.4824 20.582 c 0.1112 0.14 8.0731 13.9789 17.6934 30.7539 9.6202 16.775 30.6314 53.367 46.6914 81.3145 16.06 27.9475 29.4488 51.46 29.7519 52.25 0.4706 1.2261 -3.3288 1.4355 -25.9589 1.4355 l -26.5079 0 -0.7148 -6.1621 c -0.9754 -8.4038 -3.2718 -16.0382 -9.375 -31.1718 -5.6585 -14.0309 -8.1074 -22.2974 -8.1074 -27.375 l 0 -3.2911 -23.5 0 -23.5 0 0 2.9356 c 0 6.2509 -3.1895 17.5308 -9.0684 32.0723 -3.7969 9.3916 -6.7514 18.5469 -7.7695 24.0742 l -1.6426 8.9179 -26.7598 0 c -14.71776 0 -26.75972 -0.191 -26.75972 -0.4257 0 -0.97 95.20282 -165.7365 95.52732 -165.3282 z m -0.3965 31.7539 c -1.4031 0 -14.6846 20.8594 -18.8906 29.668 -3.4372 7.1986 -3.7667 8.662 -4.0801 18.082 l -0.3418 10.25 23.1817 0 23.1816 0 -0.3398 -10.25 c -0.3223 -9.688 -0.5756 -10.7374 -4.6231 -19.1621 -4.6534 -9.6858 -16.6132 -28.5879 -18.0879 -28.5879 z" FillRule="NonZero"/>
+                                </Path.Data>
+                            </Path>
+                        </Canvas>
+                    </Canvas>
+                </Viewbox>
+                <dxe:TextEdit Grid.Row="1" Height="22" Text="{Binding NewGear.ElectronicAttribute}" ShowBorder="False" HorizontalAlignment="Center">
+                    <dxe:TextEdit.Style>
+                        <Style TargetType="dxe:TextEdit">
+                            <Setter Property="Margin" Value="0"></Setter>
+                            <Setter Property="Padding" Value="0"></Setter>
+                            <Setter Property="BorderThickness" Value="0"></Setter>
+                            <Setter Property="Template" Value="{StaticResource DivisionEditBox}"></Setter>
+                        </Style>
+                    </dxe:TextEdit.Style>
+                </dxe:TextEdit>
+            </Grid>
+        </Grid>
+        <TextBlock Grid.Row="4" Margin="8" Text="Major Attributes"></TextBlock>
+        <Grid Grid.Row="5" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <dxe:TextEdit Text="{Binding NewGear.CritChance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=CritChance}"/>
+            <TextBlock Width="100" Grid.Column="1" Text="Critical Chance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=CritChance}"/>
+            <dxe:TextEdit Grid.Row="1" Text="{Binding NewGear.CritDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=CritDamage}"/>
+            <TextBlock Grid.Row="1" Width="100" Grid.Column="1" Text="Critical Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=CritDamage}"/>
+            <dxe:TextEdit Grid.Row="2" Text="{Binding NewGear.EnemyArmorDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=EnemyArmorDamage}"/>
+            <TextBlock Grid.Row="2" Width="100" Grid.Column="1" Text="Enemy Armor Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=EnemyArmorDamage}"/>
+            <dxe:TextEdit Grid.Row="3" Text="{Binding NewGear.SMGDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SMGDamage}"/>
+            <TextBlock Grid.Row="3" Width="100" Grid.Column="1" Text="SMG Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SMGDamage}"/>
+            <dxe:TextEdit Grid.Row="4" Text="{Binding NewGear.AssaultRifleDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AssaultRifleDamage}"/>
+            <TextBlock Grid.Row="4" Width="100" Grid.Column="1" Text="Assault Rifle Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AssaultRifleDamage}"/>
+            <dxe:TextEdit Grid.Row="5" Text="{Binding NewGear.ShotgunDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ShotgunDamage}"/>
+            <TextBlock Grid.Row="5" Width="100" Grid.Column="1" Text="Shotgun Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ShotgunDamage}"/>
+            <dxe:TextEdit Grid.Row="6" Text="{Binding NewGear.LMGDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=LMGDamage}"/>
+            <TextBlock Grid.Row="6" Width="100" Grid.Column="1" Text="LMG Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=LMGDamage}"/>
+            <dxe:TextEdit Grid.Row="7" Text="{Binding NewGear.PistolDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=PistolDamage}"/>
+            <TextBlock Grid.Row="7" Width="100" Grid.Column="1" Text="Pistol Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=PistolDamage}"/>
+            <dxe:TextEdit Grid.Row="8" Text="{Binding NewGear.MarksmanDamage}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=MarksmanDamage}"/>
+            <TextBlock Grid.Row="8" Width="100" Grid.Column="1" Text="Marksman Damage" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=MarksmanDamage}"/>
+            <dxe:TextEdit Grid.Row="9" Text="{Binding NewGear.AllResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AllResistance}"/>
+            <TextBlock Grid.Row="9" Width="100" Grid.Column="1" Text="Resist All" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AllResistance}"/>
+            <dxe:TextEdit Grid.Row="10" Text="{Binding NewGear.Health}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=Health}"/>
+            <TextBlock Grid.Row="10" Width="100" Grid.Column="1" Text="Health" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=Health}"/>
+            <dxe:TextEdit Grid.Row="11" Text="{Binding NewGear.HealthOnKill}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=HealthOnKill}"/>
+            <TextBlock Grid.Row="11" Width="100" Grid.Column="1" Text="Health Om Kill" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=HealthOnKill}"/>
+            <dxe:TextEdit Grid.Row="12" Text="{Binding NewGear.ExoticDamageResilience}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ExoticDamageResilience}"/>
+            <TextBlock Grid.Row="12" Width="100" Grid.Column="1" Text="Exotic Damage Resilience" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ExoticDamageResilience}"/>
+            <dxe:TextEdit Grid.Row="13" Text="{Binding NewGear.SkillHaste}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SkillHaste}"/>
+            <TextBlock Grid.Row="13" Width="100" Grid.Column="1" Text="Skill Haste" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SkillHaste}"/>
+            <dxe:TextEdit Grid.Row="14" Text="{Binding NewGear.SkillPower}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SkillPower}"/>
+            <TextBlock Grid.Row="14" Width="100" Grid.Column="1" Text="Skill Power" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SkillPower}"/>
+            <dxe:TextEdit Grid.Row="15" Text="{Binding NewGear.WeaponStability}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=WeaponStability}"/>
+            <TextBlock Grid.Row="15" Width="100" Grid.Column="1" Text="Weapon Stability" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=WeaponStability}"/>
+            <dxe:TextEdit Grid.Row="16" Text="{Binding NewGear.ReloadSpeed}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ReloadSpeed}"/>
+            <TextBlock Grid.Row="16" Width="100" Grid.Column="1" Text="Reload Speed" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ReloadSpeed}"/>
+            <dxe:TextEdit Grid.Row="17" Text="{Binding NewGear.SignatureResourceGain}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SignatureResourceGain}"/>
+            <TextBlock Grid.Row="17" Width="100" Grid.Column="1" Text="Signature Resource Gain" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=SignatureResourceGain}"/>
+            <dxe:TextEdit Grid.Row="18" Text="{Binding NewGear.ProptectionVsElites}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ProptectionVsElites}"/>
+            <TextBlock Grid.Row="18" Width="100" Grid.Column="1" Text="Protection VS Elites" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ProptectionVsElites}"/>
+            
+        </Grid>
+        <TextBlock Grid.Row="6" Margin="8" Text="Minor Attributes"></TextBlock>
+        <Grid Grid.Row="7" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <dxe:TextEdit Text="{Binding NewGear.DamageVsElites}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DamageVsElites}"/>
+            <TextBlock Width="100" Grid.Column="1" Text="Damage Vs Elites" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DamageVsElites}"/>
+            <dxe:TextEdit Grid.Row="1" Text="{Binding NewGear.ShockResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ShockResistance}"/>
+            <TextBlock Grid.Row="1" Width="100" Grid.Column="1" Text="Schock Resistance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=ShockResistance}"/>
+            <dxe:TextEdit Grid.Row="2" Text="{Binding NewGear.BurnResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BurnResistance}"/>
+            <TextBlock Grid.Row="2" Width="100" Grid.Column="1" Text="Burn Resistance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BurnResistance}"/>
+            <dxe:TextEdit Grid.Row="3" Text="{Binding NewGear.DisorientResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DisorientResistance}"/>
+            <TextBlock Grid.Row="3" Width="100" Grid.Column="1" Text="Disorient Resistance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DisorientResistance}"/>
+            <dxe:TextEdit Grid.Row="4" Text="{Binding NewGear.BlindResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BlindResistance}"/>
+            <TextBlock Grid.Row="4" Width="100" Grid.Column="1" Text="Blind Resistance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BlindResistance}"/>
+            <dxe:TextEdit Grid.Row="5" Text="{Binding NewGear.DisruptResitance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DisruptResitance}"/>
+            <TextBlock Grid.Row="5" Width="100" Grid.Column="1" Text="Disrup tResitance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=DisruptResitance}"/>
+            <dxe:TextEdit Grid.Row="6" Text="{Binding NewGear.BleedResistance}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BleedResistance}"/>
+            <TextBlock Grid.Row="6" Width="100" Grid.Column="1" Text="Bleed Resistance" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=BleedResistance}"/>
+            <dxe:TextEdit Grid.Row="7" Text="{Binding NewGear.KillXP}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=KillXP}"/>
+            <TextBlock Grid.Row="7" Width="100" Grid.Column="1" Text="KillXP" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=KillXP}"/>
+            <dxe:TextEdit Grid.Row="8" Text="{Binding NewGear.AmmoCapacity}" Grid.Column="0" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AmmoCapacity}"/>
+            <TextBlock Grid.Row="8" Width="100" Grid.Column="1" Text="Ammo Capacity" Visibility="{Binding Parameter, Converter={StaticResource GearTypeToVisibilityConverter}, ConverterParameter=AmmoCapacity}"/>
+        </Grid>
+    </Grid>
+</UserControl>
